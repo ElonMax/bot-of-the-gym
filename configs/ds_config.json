@@ -1,0 +1,14 @@
+{
+  "train_batch_size": 8,
+  "gradient_accumulation_steps": 1,
+  "optimizer": {
+    "type": "Adam",
+    "params": {
+      "lr": 0.00015
+    }
+  },
+  "zero_optimization": {
+      "stage": 1,
+      "reduce_bucket_size": 5e8
+  }
+}
