@@ -7,8 +7,32 @@
       "lr": 0.00015
     }
   },
-  "zero_optimization": {
-      "stage": 1,
-      "reduce_bucket_size": 5e8
-  }
+   "zero_optimization": {
+    "stage": 3,
+    "contiguous_gradients": true,
+    "stage3_max_live_parameters": 1e9,
+    "stage3_max_reuse_distance": 1e9,
+    "stage3_prefetch_bucket_size": 1e7,
+    "stage3_param_persistence_threshold": 1e5,
+    "reduce_bucket_size": 1e7,
+    "sub_group_size": 1e9,
+    "offload_optimizer": {
+      "device": "cpu"
+     },
+    "offload_param": {
+      "device": "cpu"
+     }
+   }
+//  "zero_optimization": {
+//    "stage": 2,
+//    "contiguous_gradients": true,
+//    "overlap_comm": true,
+//    "reduce_scatter": true,
+//    "reduce_bucket_size": 5e8,
+//    "allgather_bucket_size": 5e8
+//  }
+//  "zero_optimization": {
+//      "stage": 1,
+//      "reduce_bucket_size": 5e8
+//  }
 }
