@@ -1,6 +1,16 @@
-torch==2.0.1
-numpy
-transformers
-deepspeed
-jsonlines
-pandas
+# базовые библиотеки
+torch==2.1.2
+transformers==4.36.2
+
+# квантование
+bitsandbytes==0.42.0
+accelerate==0.26.0
+
+# flash attention
+flash-attn==2.4.2
+
+# параллельное обучение
+deepspeed==0.12.6
+
+# адаптеры
+peft==0.7.1
