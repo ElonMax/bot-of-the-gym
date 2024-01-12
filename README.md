@@ -15,9 +15,13 @@ conda create -n bots python=3.10
 ```
 
 ```shell
+conda install -c nvidia cuda=12.1
+```
+
+```shell
 pip install -r requirements.txt
 ```
 
 ```shell
-conda install -c nvidia cuda=11.7
+pip install .
 ```
