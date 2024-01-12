@@ -7,13 +7,20 @@ import pandas as pd
 project_path = pathlib.Path(__file__).parents[3]
 
 
-def ru_instruct_gpt4_process(path: pathlib.Path) -> (list, list):
+def ru_instruct_gpt4_process_mistral_7b(path: pathlib.Path) -> (list, list):
     """
     processes jsonlines from https://huggingface.co/datasets/lksy/ru_instruct_gpt4 into 2 lists - "inputs", "outputs"
+    used for Mistral-7B-Instruct-v0.2
     :param path: path to dataset
     :return:
         (list of json for input text, list of json for output text)
     """
+    mistral_tokenizer_path = project_path.joinpath("models/Mistral-7B-Instruct-v0.2")
+
+    from transformers import AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(mistral_tokenizer_path)
+
     with open(path, 'r') as file:
         data = list(
             map(
@@ -29,13 +36,15 @@ def ru_instruct_gpt4_process(path: pathlib.Path) -> (list, list):
         user = ' '.join([inst, inp])
         assistant = full if full else out
 
-        input_text = json.dumps({
-            "role": "user",
-            "content": user
-        })
+        messages = [
+            {"role": "user", "content": user}
+        ]
+
+        input_text = tokenizer.apply_chat_template(messages, tokenize=False)
+        output_text = assistant + tokenizer.eos_token
 
         inputs.append(input_text)
-        outputs.append(assistant)
+        outputs.append(output_text)
 
     return inputs, outputs
 
@@ -68,5 +77,5 @@ if __name__ == "__main__":
     # ru_instruct_gpt4 processing
     ru_instruct_gpt4_path = project_path.joinpath("data/raw/ru_instruct_gpt4.jsonl")
     ru_instruct_gpt4_save = project_path.joinpath("data/prep/ru_instruct_gpt4.csv")
-    rig4_inputs, rig4_outputs = ru_instruct_gpt4_process(ru_instruct_gpt4_path)
+    rig4_inputs, rig4_outputs = ru_instruct_gpt4_process_mistral_7b(ru_instruct_gpt4_path)
     save_dataset(rig4_inputs, rig4_outputs, ru_instruct_gpt4_save)
