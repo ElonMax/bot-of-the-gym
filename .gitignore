@@ -1,6 +1,8 @@
 # project's stuff
-/data/**/*.jsonl
-/data/**/*.csv
+data/**/*.jsonl
+data/**/*.csv
+models/*
+!models/README.md
 
 
 # Byte-compiled / optimized / DLL files
