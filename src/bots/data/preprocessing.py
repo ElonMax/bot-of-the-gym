@@ -4,18 +4,19 @@ import pathlib
 import pandas as pd
 
 
-project_path = pathlib.Path(__file__).parents[3]
-
-
-def ru_instruct_gpt4_process_mistral_7b(path: pathlib.Path) -> (list, list):
+def ru_instruct_gpt4_process_mistral_7b(
+        path: pathlib.Path,
+        pretrained: str = "models/Mistral-7B-Instruct-v0.2"
+) -> (list, list):
     """
     processes jsonlines from https://huggingface.co/datasets/lksy/ru_instruct_gpt4 into 2 lists - "inputs", "outputs"
     used for Mistral-7B-Instruct-v0.2
     :param path: path to dataset
+    :param pretrained: path to tokenizer
     :return:
         (list of json for input text, list of json for output text)
     """
-    mistral_tokenizer_path = project_path.joinpath("models/Mistral-7B-Instruct-v0.2")
+    mistral_tokenizer_path = pretrained
 
     from transformers import AutoTokenizer
 
@@ -74,8 +75,11 @@ def save_dataset(input_text: list, output_text: list, save_path: pathlib.Path) -
 
 
 if __name__ == "__main__":
+    project_path = pathlib.Path(__file__).parents[3]
+
     # ru_instruct_gpt4 processing
     ru_instruct_gpt4_path = project_path.joinpath("data/raw/ru_instruct_gpt4.jsonl")
     ru_instruct_gpt4_save = project_path.joinpath("data/prep/ru_instruct_gpt4.csv")
-    rig4_inputs, rig4_outputs = ru_instruct_gpt4_process_mistral_7b(ru_instruct_gpt4_path)
+    tokenizer_path = project_path.joinpath("models/Mistral-7B-Instruct-v0.2")
+    rig4_inputs, rig4_outputs = ru_instruct_gpt4_process_mistral_7b(ru_instruct_gpt4_path, pretrained=tokenizer_path)
     save_dataset(rig4_inputs, rig4_outputs, ru_instruct_gpt4_save)
