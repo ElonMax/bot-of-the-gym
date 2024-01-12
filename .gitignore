@@ -1,5 +1,6 @@
 # project's stuff
 /data/**/*.jsonl
+/data/**/*.csv
 
 
 # Byte-compiled / optimized / DLL files
