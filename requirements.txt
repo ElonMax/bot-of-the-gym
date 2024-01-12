@@ -1,6 +1,7 @@
 # базовые библиотеки
 torch==2.1.2
 transformers==4.36.2
+pandas==2.1.4
 
 # квантование
 bitsandbytes==0.42.0
