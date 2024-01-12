@@ -16,7 +16,7 @@ setup(
     entry_points={
         'console_scripts': [
             'train-bot = bots.pipeline.train_script:run',
-            'download = bots.download.from_huggingface:download'
+            'download-hf = bots.download.from_huggingface:download'
         ]
     }
 )
