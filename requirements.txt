@@ -1,13 +1,16 @@
 # базовые библиотеки
+numpy==1.26.3
 torch==2.1.2
 transformers==4.36.2
 pandas==2.1.4
+pyhocon==0.3.60
 
 # квантование
 bitsandbytes==0.42.0
 accelerate==0.26.0
 
 # flash attention
+packaging==23.2
 flash-attn==2.4.2
 
 # параллельное обучение
