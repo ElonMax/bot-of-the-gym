@@ -35,7 +35,11 @@ def ru_instruct_gpt4_process_mistral_7b(
     outputs = []
     for inst, inp, out, full in df.values:
         user = ' '.join([inst, inp])
-        assistant = full if full else out
+
+        if full:
+            assistant = full
+        else:
+            continue
 
         messages = [
             {"role": "user", "content": user}
@@ -85,4 +89,4 @@ if __name__ == "__main__":
     tokenizer_path = "/s/ls4/groups/g0126/transformers_models/mistralai/Mistral-7B-Instruct-v0.2"
 
     rig4_inputs, rig4_outputs = ru_instruct_gpt4_process_mistral_7b(ru_instruct_gpt4_path, pretrained=tokenizer_path)
-    save_dataset(rig4_inputs, rig4_outputs, ru_instruct_gpt4_save)
+    df = save_dataset(rig4_inputs, rig4_outputs, ru_instruct_gpt4_save)
