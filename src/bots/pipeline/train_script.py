@@ -32,9 +32,7 @@ def run():
     config_path = project_path.joinpath(args.config)
 
     config = ConfigFactory.parse_file(config_path)[args.namespace]
-    config["pretrained_path"] = project_path.joinpath(config["pretrained_path"])
     config["data_path"] = project_path.joinpath(config["data_path"])
-    config["save_path"] = project_path.joinpath(config["save_path"])
 
     train_data = pd.read_csv(config["data_path"], sep=';')
 
