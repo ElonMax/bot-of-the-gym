@@ -17,6 +17,7 @@ def download():
     snapshot_download(
         repo_id="mistralai/Mistral-7B-Instruct-v0.2",
         local_dir=mistral_path,
+        local_dir_use_symlinks=False,
         ignore_patterns=["pytorch_model.bin.index.json", "*.bin", ".gitattributes"]
     )
 
@@ -24,6 +25,7 @@ def download():
         repo_id="lksy/ru_instruct_gpt4",
         repo_type="dataset",
         local_dir=data_path,
+        local_dir_use_symlinks=False,
         filename="ru_instruct_gpt4.jsonl"
     )
 
