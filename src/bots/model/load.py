@@ -47,5 +47,6 @@ def for_train(config):
         )
 
         model = get_peft_model(model, peft_config)
+        model.print_trainable_parameters()
 
     return model, tokenizer, device
