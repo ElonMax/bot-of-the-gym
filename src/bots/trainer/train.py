@@ -30,7 +30,7 @@ def train(train_data, model, config, tokenizer, device):
         model.train()
 
         for step, data in enumerate(train_dataloader):
-            input_ids = data["input"].to(device)
+            input_ids = data["input_ids"].to(device)
             attn_mask = data["attention_mask"].to(device)
             labels = data["labels"].to(device)
             labels[labels == tokenizer.pad_token_id] = -100
@@ -42,6 +42,13 @@ def train(train_data, model, config, tokenizer, device):
             )
 
             loss = outputs[0]
+
+            if step % 10 == 0:
+                print("Epoch: {}/{}\t Step: {}/{}\t Loss: {:.3f}".format(epoch+1,
+                                                                         max_epochs,
+                                                                         step,
+                                                                         len(train_dataloader),
+                                                                         loss.item()))
 
             optimizer.zero_grad()
             loss.backward()
