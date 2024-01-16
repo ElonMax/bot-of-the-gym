@@ -6,8 +6,6 @@ from bots.exceptions.model import ModelTypeError
 
 
 def for_train(config):
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-
     pretrained = config["pretrained_path"]
     tokenizer = AutoTokenizer.from_pretrained(pretrained)
 
@@ -47,4 +45,4 @@ def for_train(config):
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
 
-    return model, tokenizer, device
+    return model, tokenizer
