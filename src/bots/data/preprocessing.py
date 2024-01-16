@@ -46,7 +46,7 @@ def ru_instruct_gpt4_process_mistral_7b(
         ]
 
         input_text = tokenizer.apply_chat_template(messages, tokenize=False)
-        output_text = assistant + tokenizer.eos_token
+        output_text = assistant
 
         inputs.append(input_text)
         outputs.append(output_text)
