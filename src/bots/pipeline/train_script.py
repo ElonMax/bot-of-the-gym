@@ -26,6 +26,10 @@ def parse_args() -> argparse.Namespace:
 
 
 def run():
+    import torch.cuda
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
     args = parse_args()
 
     project_path = pathlib.Path(__file__).resolve().parents[3]
@@ -36,7 +40,7 @@ def run():
 
     train_data = pd.read_csv(config["data_path"], sep=';')
 
-    model, tokenizer, device = for_train(config)
+    model, tokenizer = for_train(config)
 
     model, tokenizer = train(
         train_data=train_data,
