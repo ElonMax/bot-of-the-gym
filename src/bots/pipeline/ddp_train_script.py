@@ -1,4 +1,6 @@
 import os
+import pathlib
+import argparse
 
 import torch.distributed
 import pandas as pd
@@ -10,38 +12,51 @@ from bots.model.load import for_train
 from bots.trainer.train import train
 
 
-def setup(rank, world_size):
-    os.environ['MASTED_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '12355'
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Train script for tuning language models"
+    )
 
-    torch.distributed.init_process_group("nccl", rank=rank, world_size=world_size)
+    parser.add_argument('--config',
+                        type=str,
+                        help="Experiment config path")
+
+    parser.add_argument('--namespace',
+                        type=str,
+                        help="Config name in *.conf file")
+
+    return parser.parse_args()
 
 
-def cleanup():
-    torch.distributed.destroy_process_group()
+def run():
+    torch.distributed.init_process_group("nccl")
+    rank = torch.distributed.get_rank()
+    print(f"Start running basic DDP example on rank {rank}.")
+    device_id = rank % torch.cuda.device_count()
 
+    args = parse_args()
+    project_path = pathlib.Path(__file__).resolve().parents[3]
+    config_path = project_path.joinpath(args.config)
+    config = ConfigFactory.parse_file(config_path)[args.namespace]
+    config["data_path"] = project_path.joinpath(config["data_path"])
 
-def run(rank, world_size):
-    setup(rank, world_size)
-
-    train_data = pd.read_csv("/s/ls4/users/cappukan/projects/bot-of-the-gym/data/prep/ru_instruct_gpt4.csv", sep=';')
-    config = ConfigFactory.parse_file("/s/ls4/users/cappukan/projects/bot-of-the-gym/configs/mistral-7B-exp.conf")["ru_instruct_gpt4"]
+    train_data = pd.read_csv(config["data_path"], sep=';')
 
     model, tokenizer = for_train(config)
-    model.to(rank)
-    ddp_model = DDP(model, device_ids=[rank])
+    model.to(device_id)
 
-    ddp_model, tokenizer = train(
-        train_data=train_data,
-        model=ddp_model,
+    model = DDP(model, device_ids=[device_id])
+
+    model, tokenizer = train(
+        train_data=train_data[:20],
+        model=model,
         config=config,
         tokenizer=tokenizer,
-        device=rank
+        device=device_id
     )
 
     if rank == 0:
-        ddp_model.save_pretrained(config["save_path"])
-        tokenizer.save_pretrained(config["save_path"])
+        torch.save(model.state_dict(), config["save_path"])
 
 
 if __name__ == "__main__":
