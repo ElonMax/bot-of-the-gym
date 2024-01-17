@@ -1,15 +1,17 @@
 import random
 
 import torch
+import torch.distributed
 import numpy as np
 
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import  DistributedSampler
 
 from bots.data.dataset import BotDataset
 
 
 def train(train_data, model, config, tokenizer, device):
-    model.to(device)
+    # model.to(device)
 
     # reproducibility
     seed = config["seed"]
@@ -20,7 +22,10 @@ def train(train_data, model, config, tokenizer, device):
 
     # load data
     train_dataset = BotDataset(dataframe=train_data, tokenizer=tokenizer, text_length=config["max_tokens"])
-    train_dataloader = DataLoader(train_dataset, **config["train_loader"])
+
+    sampler = DistributedSampler(train_dataset)
+
+    train_dataloader = DataLoader(dataset=train_dataset, sampler=sampler, **config["train_loader"])
 
     # set optimizer
     optimizer = torch.optim.Adam(params=model.parameters(), **config["optimizer"])
@@ -28,6 +33,8 @@ def train(train_data, model, config, tokenizer, device):
     max_epochs = config["train_epochs"]
     for epoch in range(max_epochs):
         model.train()
+
+        torch.distributed.barrier()
 
         for step, data in enumerate(train_dataloader):
             input_ids = data["input_ids"].to(device)
