@@ -23,9 +23,10 @@ def train(train_data, model, config, tokenizer, device):
     # load data
     train_dataset = BotDataset(dataframe=train_data, tokenizer=tokenizer, text_length=config["max_tokens"])
 
-    sampler = DistributedSampler(train_dataset)
+    # sampler = DistributedSampler(train_dataset)
 
-    train_dataloader = DataLoader(dataset=train_dataset, sampler=sampler, **config["train_loader"])
+    # train_dataloader = DataLoader(dataset=train_dataset, sampler=sampler, **config["train_loader"])
+    train_dataloader = DataLoader(dataset=train_dataset, **config["train_loader"])
 
     # set optimizer
     optimizer = torch.optim.Adam(params=model.parameters(), **config["optimizer"])
@@ -34,7 +35,7 @@ def train(train_data, model, config, tokenizer, device):
     for epoch in range(max_epochs):
         model.train()
 
-        torch.distributed.barrier()
+        # torch.distributed.barrier()
 
         for step, data in enumerate(train_dataloader):
             input_ids = data["input_ids"].to(device)
