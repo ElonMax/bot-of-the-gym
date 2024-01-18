@@ -41,6 +41,7 @@ def run():
     train_data = pd.read_csv(config["data_path"], sep=';')
 
     model, tokenizer = for_train(config)
+    model.to(device)
 
     model, tokenizer = train(
         train_data=train_data,
