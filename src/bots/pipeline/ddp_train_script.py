@@ -48,7 +48,7 @@ def run():
     model = DDP(model, device_ids=[device_id])
 
     model, tokenizer = train(
-        train_data=train_data[:20],
+        train_data=train_data,
         model=model,
         config=config,
         tokenizer=tokenizer,
@@ -56,7 +56,7 @@ def run():
     )
 
     if rank == 0:
-        torch.save(model.state_dict(), config["save_path"])
+        model.module.save_pretrained(config["save_path"])
 
 
 if __name__ == "__main__":
