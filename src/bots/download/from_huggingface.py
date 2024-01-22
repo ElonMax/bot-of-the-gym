@@ -13,9 +13,17 @@ data_path.mkdir(exist_ok=True, parents=True)
 
 
 def download():
-    mistral_path = models_path.joinpath("Mistral-7B-Instruct-v0.2")
+    mistral_instruct_path = models_path.joinpath("Mistral-7B-Instruct-v0.2")
     snapshot_download(
         repo_id="mistralai/Mistral-7B-Instruct-v0.2",
+        local_dir=mistral_instruct_path,
+        local_dir_use_symlinks=False,
+        ignore_patterns=["pytorch_model.bin.index.json", "*.bin", ".gitattributes"]
+    )
+
+    mistral_path = models_path.joinpath("Mistral-7B-v0.1")
+    snapshot_download(
+        repo_id="mistralai/Mistral-7B-v0.1",
         local_dir=mistral_path,
         local_dir_use_symlinks=False,
         ignore_patterns=["pytorch_model.bin.index.json", "*.bin", ".gitattributes"]
