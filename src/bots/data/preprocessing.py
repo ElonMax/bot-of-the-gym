@@ -36,10 +36,10 @@ def ru_instruct_gpt4_process_mistral_7b(
     for inst, inp, out, full in df.values:
         user = ' '.join([inst, inp])
 
-        if full:
+        if full and len(full) > len(out):
             assistant = full
         else:
-            continue
+            assistant = out
 
         messages = [
             {"role": "user", "content": user}
@@ -74,6 +74,8 @@ def save_dataset(input_text: list, output_text: list, save_path: pathlib.Path) -
         save_path.parent.mkdir(parents=True, exist_ok=True)
 
     prep_dataset.to_csv(save_path, sep=';', index=False)
+
+    print(prep_dataset)
 
     return prep_dataset
 
