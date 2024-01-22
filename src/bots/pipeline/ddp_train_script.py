@@ -45,18 +45,18 @@ def run():
     model, tokenizer = for_train(config)
     model.to(device_id)
 
+    optimizer = torch.optim.Adam(params=model.parameters(), **config["optimizer"])
+
     model = DDP(model, device_ids=[device_id])
 
-    model, tokenizer = train(
+    train(
         train_data=train_data,
         model=model,
+        optimizer=optimizer,
         config=config,
         tokenizer=tokenizer,
         device=device_id
     )
-
-    if rank == 0:
-        model.module.save_pretrained(config["save_path"])
 
 
 if __name__ == "__main__":
