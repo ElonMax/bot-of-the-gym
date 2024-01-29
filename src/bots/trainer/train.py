@@ -14,15 +14,15 @@ from bots.data.dataset import BotDataset
 
 
 def train(train_data, model, optimizer, config, tokenizer, device):
+    log_path = pathlib.Path(config["logdir"]) / datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
     prof = torch.profiler.profile(
         activities=[torch.profiler.ProfilerActivity.CPU, torch.profiler.ProfilerActivity.CUDA],
-        on_trace_ready=torch.profiler.tensorboard_trace_handler(config["logdir"]),
+        on_trace_ready=torch.profiler.tensorboard_trace_handler(log_path.__str__()),
         record_shapes=True,
         profile_memory=True,
         use_cuda=True
     )
-
-    log_path = pathlib.Path(config["logdir"]) / datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
     writer = SummaryWriter(log_path.__str__())
 
