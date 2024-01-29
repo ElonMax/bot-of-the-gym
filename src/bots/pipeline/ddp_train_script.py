@@ -1,4 +1,3 @@
-import os
 import pathlib
 import argparse
 
@@ -38,14 +37,13 @@ def run():
     project_path = pathlib.Path(__file__).resolve().parents[3]
     config_path = project_path.joinpath(args.config)
     config = ConfigFactory.parse_file(config_path)[args.namespace]
-    config["data_path"] = project_path.joinpath(config["data_path"])
 
     train_data = pd.read_csv(config["data_path"], sep=';')
 
     model, tokenizer = for_train(config)
     model.to(device_id)
 
-    optimizer = torch.optim.Adam(params=model.parameters(), **config["optimizer"])
+    optimizer = torch.optim.AdamW(params=model.parameters(), **config["optimizer"])
 
     model = DDP(model, device_ids=[device_id])
 
