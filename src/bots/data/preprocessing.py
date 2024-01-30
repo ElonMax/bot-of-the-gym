@@ -75,8 +75,6 @@ def save_dataset(input_text: list, output_text: list, save_path: pathlib.Path) -
 
     prep_dataset.to_csv(save_path, sep=';', index=False)
 
-    print(prep_dataset)
-
     return prep_dataset
 
 
