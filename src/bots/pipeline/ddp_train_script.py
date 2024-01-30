@@ -38,7 +38,17 @@ def run():
     config_path = project_path.joinpath(args.config)
     config = ConfigFactory.parse_file(config_path)[args.namespace]
 
-    train_data = pd.read_csv(config["data_path"], sep=';')
+    if config["valid_path"]:
+        train_data = pd.read_csv(config["data_path"], sep=';')
+        valid_data = pd.read_csv(config["valid_path"], sep=';')
+    else:
+        from sklearn.model_selection import train_test_split
+        train_data = pd.read_csv(config["data_path"], sep=';')
+
+        train_data, valid_data = train_test_split(train_data, test_size=config["valid_size"], random_state=config["seed"])
+
+        train_data = train_data.reset_index(drop=True)
+        valid_data = valid_data.reset_index(drop=True)
 
     model, tokenizer = for_train(config)
     model.to(device_id)
@@ -49,6 +59,7 @@ def run():
 
     train(
         train_data=train_data,
+        valid_data=valid_data,
         model=model,
         optimizer=optimizer,
         config=config,
