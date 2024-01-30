@@ -3,6 +3,7 @@ data/**/*.jsonl
 data/**/*.csv
 models/*
 !models/README.md
+log
 
 
 # Byte-compiled / optimized / DLL files
