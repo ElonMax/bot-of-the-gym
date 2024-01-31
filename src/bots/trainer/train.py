@@ -18,7 +18,7 @@ from bots.data.dataset import BotDataset
 def train(
         train_data: pd.DataFrame,
         valid_data: pd.DataFrame,
-        model: transformers.PreTrainedModel,
+        model: torch.nn.Module | torch.nn.parallel.DistributedDataParallel,
         config: pyhocon.ConfigTree | dict,
         tokenizer: transformers.PreTrainedTokenizer,
         device: int | str,
