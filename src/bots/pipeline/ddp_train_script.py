@@ -55,15 +55,13 @@ def run():
 
     optimizer = torch.optim.AdamW(params=model.parameters(), **config["optimizer"])
 
-    scheduler = torch.optim.lr_scheduler.CyclicLR(
-        optimizer,
-        base_lr=2e-6,
-        max_lr=2e-4,
-        step_size_up=100,
-        mode="exp_range",
-        gamma=0.999,
-        cycle_momentum=False
-    )
+    if config["scheduler"] == "CyclicLR":
+        scheduler = torch.optim.lr_scheduler.CyclicLR(
+            optimizer,
+            **config["CyclicLR"]
+        )
+    else:
+        scheduler = None
 
     model = DDP(model, device_ids=[device_id])
 
