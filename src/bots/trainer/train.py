@@ -2,9 +2,12 @@ import datetime
 import random
 
 import mlflow
+import pandas as pd
+import pyhocon
 import torch
 import torch.distributed
 import numpy as np
+import transformers
 
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
@@ -12,7 +15,16 @@ from torch.utils.data.distributed import DistributedSampler
 from bots.data.dataset import BotDataset
 
 
-def train(train_data, valid_data, model, optimizer, config, tokenizer, device):
+def train(
+        train_data: pd.DataFrame,
+        valid_data: pd.DataFrame,
+        model: transformers.PreTrainedModel,
+        config: pyhocon.ConfigTree | dict,
+        tokenizer: transformers.PreTrainedTokenizer,
+        device: int | str,
+        optimizer: torch.optim.Optimizer,
+        scheduler: torch.optim.lr_scheduler.LRScheduler = None
+):
 
     torch.distributed.barrier()
     time = datetime.datetime.now().strftime("%d%m%Y-%H%M")
@@ -69,17 +81,21 @@ def train(train_data, valid_data, model, optimizer, config, tokenizer, device):
 
                 loss = outputs[0]
 
-                print("Train Epoch: {}/{}\t Step: {}/{}\t Loss: {:.3f}\t".format(epoch+1,
-                                                                                 max_epochs,
-                                                                                 step,
-                                                                                 len(train_dataloader),
-                                                                                 loss.item()))
+                print("Train Epoch: {}/{}\t Step: {}/{}\t Loss: {:.3f}\t lr: {}".format(epoch+1,
+                                                                                        max_epochs,
+                                                                                        step,
+                                                                                        len(train_dataloader),
+                                                                                        loss.item(),
+                                                                                        scheduler.get_lr()))
 
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
 
-                mlflow.log_metric("Loss/train", loss, step)
+                if scheduler:
+                    scheduler.step()
+
+                mlflow.log_metric("Loss/train", loss, step + len(train_dataloader) * epoch)
 
             model.eval()
             with torch.no_grad():
