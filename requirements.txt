@@ -4,6 +4,7 @@ torch==2.1.2
 transformers==4.36.2
 pandas==2.1.4
 pyhocon==0.3.60
+scikit-learn==1.4.0
 
 # квантование
 bitsandbytes==0.42.0
