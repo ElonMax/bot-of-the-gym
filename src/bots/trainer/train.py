@@ -72,6 +72,7 @@ def train(
                 input_ids = data["input_ids"].to(device)
                 attn_mask = data["attention_mask"].to(device)
                 labels = data["labels"].to(device)
+                labels[labels == tokenizer.pad_token_id] = -100
 
                 outputs = model(
                     input_ids=input_ids,
@@ -81,12 +82,12 @@ def train(
 
                 loss = outputs[0]
 
-                print("Train Epoch: {}/{}\t Step: {}/{}\t Loss: {:.3f}\t lr: {}".format(epoch+1,
-                                                                                        max_epochs,
-                                                                                        step,
-                                                                                        len(train_dataloader),
-                                                                                        loss.item(),
-                                                                                        scheduler.get_lr()))
+                print("Train Epoch: {}/{}\t Step: {}/{}\t Loss: {:.3f}\t".format(epoch+1,
+                                                                                 max_epochs,
+                                                                                 step,
+                                                                                 len(train_dataloader),
+                                                                                 loss.item(),
+                                                                                 ))
 
                 optimizer.zero_grad()
                 loss.backward()
@@ -104,6 +105,7 @@ def train(
                     input_ids = data["input_ids"].to(device)
                     attn_mask = data["attention_mask"].to(device)
                     labels = data["labels"].to(device)
+                    labels[labels == tokenizer.pad_token_id] = -100
 
                     outputs = model(
                         input_ids=input_ids,
