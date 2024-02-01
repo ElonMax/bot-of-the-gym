@@ -33,6 +33,9 @@ def for_train(config):
         model.resize_token_embeddings(len(tokenizer))
         model.config.pad_token_id = tokenizer.pad_token_id
 
+    if config["gradient_checkpointing"]:
+        model.gradient_checkpointing_enable()
+
     if config["lora"]:
         from peft import get_peft_model, LoraConfig, TaskType
 
