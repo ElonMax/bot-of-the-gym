@@ -60,6 +60,13 @@ def run():
             optimizer,
             **config["CyclicLR"]
         )
+    elif config["scheduler"] == "CosineAnnealingLR":
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer,
+            **config["CosineAnnealingLR"]
+        )
+    elif config["scheduler"] == "LambdaLR":
+        scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda lr: config["LambdaLR"] ** lr)
     else:
         scheduler = None
 
