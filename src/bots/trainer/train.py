@@ -1,3 +1,4 @@
+import time
 import datetime
 import random
 
@@ -27,7 +28,7 @@ def train(
 ):
 
     torch.distributed.barrier()
-    time = datetime.datetime.now().strftime("%d%m%Y-%H%M")
+    stamp = datetime.datetime.now().strftime("%d%m%Y-%H%M")
 
     mlflow.set_tracking_uri(config["log_path"])
 
@@ -42,7 +43,7 @@ def train(
     torch.distributed.barrier()
     mlflow.set_experiment(config["experiment_name"])
 
-    run_name = "{}-rank:{}".format(time, device)
+    run_name = "{}-rank:{}".format(stamp, device)
     with mlflow.start_run(run_name=run_name):
         mlflow.log_params(config)
 
@@ -69,6 +70,8 @@ def train(
             torch.distributed.barrier()
 
             for step, data in enumerate(train_dataloader, 1):
+                start_time = time.time()
+
                 input_ids = data["input_ids"].to(device)
                 attn_mask = data["attention_mask"].to(device)
                 labels = data["labels"].to(device)
@@ -82,13 +85,6 @@ def train(
 
                 loss = outputs[0]
 
-                print("Train Epoch: {}/{}\t Step: {}/{}\t Loss: {:.3f}\t".format(epoch+1,
-                                                                                 max_epochs,
-                                                                                 step,
-                                                                                 len(train_dataloader),
-                                                                                 loss.item(),
-                                                                                 ))
-
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
@@ -97,6 +93,14 @@ def train(
                     scheduler.step()
 
                 mlflow.log_metric("Loss/train", loss, step + len(train_dataloader) * epoch)
+
+                print("Train Epoch: {}/{}\t Step: {}/{}\t Loss: {:.3f}\t Time: {:.3f}".format(epoch+1,
+                                                                                              max_epochs,
+                                                                                              step,
+                                                                                              len(train_dataloader),
+                                                                                              loss.item(),
+                                                                                              time.time() - start_time
+                                                                                              ))
 
             model.eval()
             with torch.no_grad():
