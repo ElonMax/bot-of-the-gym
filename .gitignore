@@ -1,6 +1,6 @@
 # project's stuff
-data/**/*.jsonl
-data/**/*.csv
+data/*
+!data/README.md
 models/*
 !models/README.md
 log
