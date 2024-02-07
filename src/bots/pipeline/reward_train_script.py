@@ -36,8 +36,8 @@ def run():
     config_path = project_path.joinpath(args.config)
     config = ConfigFactory.parse_file(config_path)[args.namespace]
 
-    train_path = "/home/elnmax/Projects/bot-of-the-gym/data/raw/oasst1_pairwise_rlhf_reward/data/train-00000-of-00001-5466fcbe20f5c0ef.parquet"
-    valid_path = "/home/elnmax/Projects/bot-of-the-gym/data/raw/oasst1_pairwise_rlhf_reward/data/validation-00000-of-00001-6855d7506403041c.parquet"
+    train_path = "/s/ls4/users/cappukan/projects/bot-of-the-gym/data/raw/oasst1_pairwise_rlhf_reward/data/train-00000-of-00001-5466fcbe20f5c0ef.parquet"
+    valid_path = "/s/ls4/users/cappukan/projects/bot-of-the-gym/data/raw/oasst1_pairwise_rlhf_reward/data/validation-00000-of-00001-6855d7506403041c.parquet"
 
     train_table = pq.read_pandas(train_path).to_pandas()
     train_table = train_table[train_table["lang"] == "ru"].reset_index(drop=True)
@@ -47,7 +47,7 @@ def run():
 
     model, tokenizer = for_train(config)
     model.to(device_id)
-
+    
     optimizer = torch.optim.AdamW(params=model.parameters(), **config["optimizer"])
 
     train(
