@@ -13,7 +13,7 @@ import transformers
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
 
-from bots.data.dataset import BotDataset
+from bots.data.chat_dataset import BotDataset
 
 
 def train(
