@@ -7,8 +7,8 @@ import pandas as pd
 from pyhocon import ConfigFactory
 from torch.nn.parallel import DistributedDataParallel as DDP
 
-from bots.model.load import for_train
-from bots.trainer.train import train
+from bots.model.mistral_for_chat import for_train
+from bots.trainer.chat_train import train
 
 
 def parse_args() -> argparse.Namespace:
