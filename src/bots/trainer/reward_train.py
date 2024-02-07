@@ -33,8 +33,8 @@ def train(model, tokenizer, scheduler, optimizer, config, train_data, valid_data
             rejected_ids = data["input_ids_rejected"].to(device)
             rejected_mask = data["attn_mask_rejected"].to(device)
 
-            r1 = model(chosen_ids, chosen_mask)
-            r2 = model(rejected_ids, rejected_mask)
+            r1 = model(input_ids=chosen_ids, attention_mask=chosen_mask).logits
+            r2 = model(input_ids=rejected_ids, attention_mask=rejected_mask).logits
 
             loss = -torch.nn.functional.logsigmoid(r1-r2).mean()
 
