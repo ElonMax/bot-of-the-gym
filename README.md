@@ -3,6 +3,7 @@
 ## Datasets
 
 - Instructions from GPT-4 - https://huggingface.co/datasets/lksy/ru_instruct_gpt4
+- Human-generated - https://huggingface.co/datasets/OpenAssistant/oasst2
 
 ## Models
 
@@ -12,10 +13,6 @@
 
 ```shell
 conda create -n bots python=3.10
-```
-
-```shell
-conda install -c nvidia cuda=12.1
 ```
 
 ```shell
