@@ -14,9 +14,5 @@ setup(
         "": "src",
     },
     entry_points={
-        'console_scripts': [
-            'train-bot = bots.pipeline.train_script:run',
-            'download-hf = bots.download.from_huggingface:download'
-        ]
     }
 )
