@@ -13,94 +13,94 @@ data_path = project_path.joinpath("data/raw")
 data_path.mkdir(exist_ok=True, parents=True)
 
 
+# data format
+# {
+#     "arg-name":[
+#         "huggingface-name",
+#         ["igonre-file1", "*.igonre_files", 'etc.'],
+#         "model/dataset"
+#     ]
+# }
+
+dict_for_args = {
+    "mistral_instruct": [
+        "mistralai/Mistral-7B-Instruct-v0.2",
+        ["pytorch_model.bin.index.json", "*.bin", ".gitattributes"],
+        "model"
+    ],
+    "mistral_base": [
+        "mistralai/Mistral-7B-v0.1",
+        ["pytorch_model.bin.index.json", "*.bin", ".gitattributes"],
+        "model"
+    ],
+    "rugpt3large": [
+        "ai-forever/rugpt3large_based_on_gpt2",
+        ["*.msgpack", ".gitattributes"],
+        "model"
+    ],
+
+    "data_from_gpt4": [
+        "lksy/ru_instruct_gpt4",
+        [".gitattributes", ],
+        "dataset"
+    ],
+    "oasst1_rlhf": [
+        "tasksource/oasst1_pairwise_rlhf_reward",
+        [".gitattributes", ],
+        "dataset"
+    ]
+}
+
+
 def download():
-    parser = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser()
 
-    )
+    for arg, desc in dict_for_args.items():
 
-    parser.add_argument(
-        "--mistral_instruct",
-        default=False,
-        action="store_true",
-        help="Download model Mistral-7B-Instruct-v0.2"
-    )
+        match desc[-1]:
+            case "model":
+                arg_help = "Download model {}".format(desc[0])
+            case "dataset":
+                arg_help = "Download data {}".format(desc[0])
+            case _:
+                continue
 
-    parser.add_argument(
-        "--mistral_base",
-        default=False,
-        action="store_true",
-        help="Download model Mistral-7B-v0.1"
-    )
-
-    parser.add_argument(
-        "--rugpt3large",
-        default=False,
-        action="store_true",
-        help="Download model rugpt3large_based_on_gpt2"
-    )
-
-    parser.add_argument(
-        "--data_from_gpt4",
-        default=False,
-        action="store_true",
-        help="Download dataset ru_instruct_gpt4"
-    )
-
-    parser.add_argument(
-        "--oasst1_rlhf",
-        default=False,
-        action="store_true",
-        help="Download dataset oasst1_pairwise_rlhf_reward"
-    )
+        parser.add_argument(
+            "--{}".format(arg),
+            default=False,
+            action="store_true",
+            help=arg_help
+        )
 
     args = parser.parse_args()
 
-    if args.mistral_instruct:
-        mistral_instruct_path = models_path.joinpath("Mistral-7B-Instruct-v0.2")
-        snapshot_download(
-            repo_id="mistralai/Mistral-7B-Instruct-v0.2",
-            local_dir=mistral_instruct_path,
-            local_dir_use_symlinks=False,
-            ignore_patterns=["pytorch_model.bin.index.json", "*.bin", ".gitattributes"]
-        )
+    for arg, use in args.__dict__.items():
 
-    if args.mistral_base:
-        mistral_path = models_path.joinpath("Mistral-7B-v0.1")
-        snapshot_download(
-            repo_id="mistralai/Mistral-7B-v0.1",
-            local_dir=mistral_path,
-            local_dir_use_symlinks=False,
-            ignore_patterns=["pytorch_model.bin.index.json", "*.bin", ".gitattributes"]
-        )
+        if use:
+            desc = dict_for_args[arg]
+        else:
+            continue
 
-    if args.rugpt3large:
-        rugpt3large_path = models_path.joinpath("rugpt3large_based_on_gpt2")
-        snapshot_download(
-            repo_id="ai-forever/rugpt3large_based_on_gpt2",
-            local_dir=rugpt3large_path,
-            local_dir_use_symlinks=False,
-            ignore_patterns=["*.msgpack", ".gitattributes"]
-        )
-
-    if args.data_from_gpt4:
-        ru_instruct_gpt4_path = data_path.joinpath("ru_instruct_gpt4")
-        snapshot_download(
-            repo_id="lksy/ru_instruct_gpt4",
-            repo_type="dataset",
-            local_dir=ru_instruct_gpt4_path,
-            local_dir_use_symlinks=False,
-            ignore_patterns=[".gitattributes"]
-        )
-
-    if args.oasst1_rlhf:
-        oasst1_rlhf_path = data_path.joinpath("oasst1_pairwise_rlhf_reward")
-        snapshot_download(
-            repo_id="tasksource/oasst1_pairwise_rlhf_reward",
-            repo_type="dataset",
-            local_dir=oasst1_rlhf_path,
-            local_dir_use_symlinks=False,
-            ignore_patterns=[".gitattributes"]
-        )
+        match desc[-1]:
+            case "model":
+                m_path = models_path.joinpath(desc[0])
+                m_path.mkdir(parents=True, exist_ok=True)
+                snapshot_download(
+                    repo_id=desc[0],
+                    local_dir=m_path,
+                    local_dir_use_symlinks=False,
+                    ignore_patterns=desc[1]
+                )
+            case "dataset":
+                d_path = data_path.joinpath(desc[0])
+                d_path.mkdir(parents=True, exist_ok=True)
+                snapshot_download(
+                    repo_id=desc[0],
+                    repo_type="dataset",
+                    local_dir=d_path,
+                    local_dir_use_symlinks=False,
+                    ignore_patterns=desc[1]
+                )
 
 
 if __name__ == '__main__':
