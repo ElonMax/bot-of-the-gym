@@ -9,6 +9,7 @@ setup(
     description="Instruments for tuning langauge models",
     packages=find_packages(
         where="src",
+        include=["bots", ]
     ),
     package_dir={
         "": "src",
