@@ -7,7 +7,7 @@
 
 ## Models
 
-- https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2
+- Mistral-7B-Instruct-v0.2 - https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2
 
 ## Setup
 
