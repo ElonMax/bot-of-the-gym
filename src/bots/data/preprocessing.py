@@ -84,9 +84,8 @@ if __name__ == "__main__":
     # ru_instruct_gpt4 processing
     ru_instruct_gpt4_path = project_path.joinpath("data/raw/ru_instruct_gpt4.jsonl")
     ru_instruct_gpt4_save = project_path.joinpath("data/prep/ru_instruct_gpt4.csv")
-    # tokenizer_path = project_path.joinpath("models/Mistral-7B-Instruct-v0.2")
 
-    tokenizer_path = "models/Mistral-7B-Instruct-v0.2"
+    tokenizer_path = "/s/ls4/groups/g0126/transformers_models/mistralai/Mistral-7B-Instruct-v0.2"
 
     rig4_inputs, rig4_outputs = ru_instruct_gpt4_process_mistral_7b(ru_instruct_gpt4_path, pretrained=tokenizer_path)
     df = save_dataset(rig4_inputs, rig4_outputs, ru_instruct_gpt4_save)
