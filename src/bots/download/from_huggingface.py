@@ -48,6 +48,11 @@ dict_for_args = {
         "tasksource/oasst1_pairwise_rlhf_reward",
         [".gitattributes", ],
         "dataset"
+    ],
+    "oasst2": [
+        "OpenAssistant/oasst2",
+        [".gitattributes", ],
+        "dataset"
     ]
 }
 
