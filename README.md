@@ -28,7 +28,7 @@ python src/bots/download/from_huggingface.py --data_from_gpt4
 
 ```shell
 # Готовим данные для обучения модели (на узле!!!)
-python src/bots/data/preprocessing.py
+python src/bots/data/preprocessing.py --data_from_gpt4
 ```
 
 Поменять пути в конфиге на свои `configs/mistral-7B-exp.conf`
