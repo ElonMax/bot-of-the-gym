@@ -55,20 +55,24 @@ def run():
 
     optimizer = torch.optim.AdamW(params=model.parameters(), **config["optimizer"])
 
-    if config["scheduler"] == "CyclicLR":
-        scheduler = torch.optim.lr_scheduler.CyclicLR(
-            optimizer,
-            **config["CyclicLR"]
-        )
-    elif config["scheduler"] == "CosineAnnealingLR":
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-            optimizer,
-            **config["CosineAnnealingLR"]
-        )
-    elif config["scheduler"] == "LambdaLR":
-        scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda lr: config["LambdaLR"] ** lr)
-    else:
-        scheduler = None
+    match config["scheduler"]:
+        case "CyclicLR":
+            scheduler = torch.optim.lr_scheduler.CyclicLR(
+                optimizer,
+                **config["CyclicLR"]
+            )
+        case "CosineAnnealingLR":
+            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer,
+                **config["CosineAnnealingLR"]
+            )
+        case "LambdaLR":
+            scheduler = torch.optim.lr_scheduler.LambdaLR(
+                optimizer,
+                lr_lambda=lambda lr: config["LambdaLR"] ** lr
+            )
+        case _:
+            scheduler = None
 
     model = DDP(model, device_ids=[device_id])
 
