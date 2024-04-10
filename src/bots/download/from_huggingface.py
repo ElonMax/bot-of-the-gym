@@ -12,15 +12,16 @@ models_path.mkdir(exist_ok=True, parents=True)
 data_path = project_path.joinpath("data/raw")
 data_path.mkdir(exist_ok=True, parents=True)
 
-
-# data format
-# {
-#     "arg-name":[
-#         "huggingface-name",
-#         ["igonre-file1", "*.igonre_files", 'etc.'],
-#         "model/dataset"
-#     ]
-# }
+"""
+data format
+{
+    "arg-name":[
+        "huggingface-name",
+        ["igonre-file1", "*.igonre_files", 'etc.'],
+        "model/dataset"
+    ]
+}
+"""
 
 dict_for_args = {
     "mistral_instruct": [
