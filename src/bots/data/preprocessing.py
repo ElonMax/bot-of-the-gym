@@ -1,8 +1,11 @@
+import gzip
 import json
 import pathlib
 import argparse
 
 import pandas as pd
+
+from transformers import AutoTokenizer
 
 
 def parse_arguments():
@@ -14,6 +17,13 @@ def parse_arguments():
         default=False,
         action="store_true",
         help="Preprocessing for lksy/ru_instruct_gpt4 dataset"
+    )
+
+    parser.add_argument(
+        "--oasst2",
+        default=False,
+        action="store_true",
+        help="Preprocessing for OpenAssistant/oasst2 dataset"
     )
 
     return parser.parse_args()
@@ -32,9 +42,6 @@ def ru_instruct_gpt4_process_mistral_7b(
         (list of json for input text, list of json for output text)
     """
     mistral_tokenizer_path = pretrained
-
-    from transformers import AutoTokenizer
-
     tokenizer = AutoTokenizer.from_pretrained(mistral_tokenizer_path)
 
     with open(path, 'r') as file:
@@ -69,6 +76,36 @@ def ru_instruct_gpt4_process_mistral_7b(
     return inputs, outputs
 
 
+def oasst2_process_mistral_7b(
+        path: pathlib.Path,
+        pretrained: str = "models/Mistral-7B-Instruct-v0.2"
+) -> (list, list):
+    """
+
+    :param path:
+    :param pretrained:
+    :return:
+    """
+    mistral_tokenizer_path = pretrained
+    tokenizer = AutoTokenizer.from_pretrained(mistral_tokenizer_path)
+
+    with gzip.open(path, mode="tr") as file:
+        data = list(
+            map(
+                lambda x: json.loads(x), file.readlines()
+            )
+        )
+
+    df = pd.DataFrame(data)
+    df = df[df["lang"] == "ru"]
+    trees = df["message_tree_id"].unique()
+
+    for tree in trees:
+        print(df[df["message_tree_id"] == tree][["message_id", "parent_id", "text", "role"]])
+
+    return [], []
+
+
 def save_dataset(input_text: list, output_text: list, save_path: pathlib.Path) -> pd.DataFrame:
     """
     creates Dataframe from 2 list - input_text, output_text and save it
@@ -98,11 +135,20 @@ if __name__ == "__main__":
 
     args = parse_arguments()
 
-    # ru_instruct_gpt4 processing
+    # tokenizer_path = "/s/ls4/groups/g0126/transformers_models/mistralai/Mistral-7B-Instruct-v0.2"
+    tokenizer_path = "models/Mistral-7B-Instruct-v0.2"
+
     if args.data_from_gpt4:
-        ru_instruct_gpt4_path = project_path.joinpath("data/raw/ru_instruct_gpt4/ru_instruct_gpt4.jsonl")
-        ru_instruct_gpt4_save = project_path.joinpath("data/prep/ru_instruct_gpt4.csv")
-        # tokenizer_path = "/s/ls4/groups/g0126/transformers_models/mistralai/Mistral-7B-Instruct-v0.2"
-        tokenizer_path = "models/Mistral-7B-Instruct-v0.2"
-        rig4_inputs, rig4_outputs = ru_instruct_gpt4_process_mistral_7b(ru_instruct_gpt4_path, pretrained=tokenizer_path)
-        df = save_dataset(rig4_inputs, rig4_outputs, ru_instruct_gpt4_save)
+        load_path = project_path.joinpath("data/raw/ru_instruct_gpt4/ru_instruct_gpt4.jsonl")
+        save_path = project_path.joinpath("data/prep/ru_instruct_gpt4.csv")
+        input_data, output_data = ru_instruct_gpt4_process_mistral_7b(load_path, pretrained=tokenizer_path)
+
+    elif args.oasst2:
+        load_path = project_path.joinpath("data/raw/OpenAssistant/oasst2/2023-11-05_oasst2_all.messages.jsonl.gz")
+        save_path = project_path.joinpath("data/prep/oasst2.csv")
+        input_data, output_data = oasst2_process_mistral_7b(load_path, pretrained=tokenizer_path)
+    else:
+        input_data, output_data, save_path = None, None, None
+
+    if input_data and output_data and save_path:
+        df = save_dataset(input_data, output_data, save_path)
